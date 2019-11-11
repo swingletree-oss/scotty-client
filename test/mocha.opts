@@ -1,0 +1,3 @@
+test/**/*.spec.ts
+--recursive
+--require ./test/mocha.env.js

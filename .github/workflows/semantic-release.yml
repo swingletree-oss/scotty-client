@@ -1,0 +1,26 @@
+name: Semantic Release
+
+on:
+  push:
+    branches:
+    - "master"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Git
+      run: sudo apt install -y git
+    - name: Initialize
+      run: npm ci
+    - name: build
+      run: npm run build
+    - name: Run tests
+      run: npm test
+    - name: release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npm run release
