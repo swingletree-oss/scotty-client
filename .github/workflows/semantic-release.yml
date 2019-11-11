@@ -14,10 +14,16 @@ jobs:
     - name: Install Git
       run: sudo apt install -y git
     - name: Initialize
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: npm ci
     - name: build
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: npm run build
     - name: Run tests
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: npm test
     - name: release
       env:
