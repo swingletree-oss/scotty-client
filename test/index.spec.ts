@@ -20,7 +20,7 @@ describe("Scotty Client Tests", () => {
     requestMock.post = sinon.stub();
     requestMock.get = sinon.stub();
 
-    uut = new ScottyClient("");
+    uut = new ScottyClient();
   });
 
 
