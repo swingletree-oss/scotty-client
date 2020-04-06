@@ -1,5 +1,7 @@
 "use strict";
 
+import "reflect-metadata";
+
 import { Harness, Comms } from "@swingletree-oss/harness";
 import * as request from "request";
 
@@ -38,7 +40,11 @@ class ScottyClient {
             if (!error && response.statusCode >= 200 && response.statusCode < 300 ) {
               resolve();
             } else {
-              reject(new Comms.Error("General Error", error));
+              if (error) {
+                reject(new Comms.Error("General Error", error));
+              } else {
+                reject((body as Comms.Message.ErrorMessage).errors);
+              }
             }
           } catch (err) {
             reject([ new Comms.Error("Report Error", err) ]);
@@ -73,7 +79,11 @@ class ScottyClient {
             if (!error && response.statusCode >= 200 && response.statusCode < 300 ) {
               resolve(new Harness.RepositoryConfig(body.data));
             } else {
-              reject(new Comms.Error("General Error", error));
+              if (error) {
+                reject(new Comms.Error("General Error", error));
+              } else {
+                reject((body as Comms.Message.ErrorMessage).errors);
+              }
             }
           } catch (err) {
             reject([ new Comms.Error("Configuration Error", err) ]);
