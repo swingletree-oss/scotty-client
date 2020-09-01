@@ -41,7 +41,7 @@ class ScottyClient {
               resolve();
             } else {
               if (error) {
-                reject(new Comms.Error("General Error", error));
+                reject(new Comms.Error("General Error", error, response?.statusCode));
               } else {
                 reject((body as Comms.Message.ErrorMessage).errors);
               }

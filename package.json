@@ -22,7 +22,7 @@
     "release": "semantic-release"
   },
   "dependencies": {
-    "@swingletree-oss/harness": "^2.0.2",
+    "@swingletree-oss/harness": "^2.0.3",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.2"
   },
