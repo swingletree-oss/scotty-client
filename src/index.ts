@@ -2,7 +2,7 @@
 
 import "reflect-metadata";
 
-import { Harness, Comms } from "@swingletree-oss/harness";
+import { Harness, Comms, log } from "@swingletree-oss/harness";
 import * as request from "request";
 
 
@@ -41,9 +41,9 @@ class ScottyClient {
               resolve();
             } else {
               if (error) {
-                reject(new Comms.Error("General Error", error, response?.statusCode));
+                reject(new Comms.Error("General Report Error", error, response?.statusCode));
               } else {
-                reject(new Comms.Error("General Error", response?.statusMessage, response?.statusCode));
+                reject(new Comms.Error("General Report Error", response?.statusMessage, response?.statusCode));
               }
             }
           } catch (err) {
@@ -58,14 +58,14 @@ class ScottyClient {
    *
    * @param source repository to retrieve the configuration from
    */
-  public async getRepositoryConfig(source: Harness.ScmSource): Promise<Harness.RepositoryConfig> {
+  public getRepositoryConfig(source: Harness.ScmSource): Promise<Harness.RepositoryConfig> {
     return new Promise<Harness.RepositoryConfig>((resolve, reject) => {
       let url;
 
       switch (source.type) {
         case Harness.ScmType.GITHUB:
           const ghSource = source as Harness.GithubSource;
-          url = `/config/github/${ghSource.owner}/${ghSource.repo}`;
+          url = `/config/provider/${ghSource.owner}/${ghSource.repo}`;
         break;
 
         default:
@@ -73,20 +73,19 @@ class ScottyClient {
           return;
       }
 
+      log.debug("requesting configuration from scotty");
       this.scottyClient.get(url, {},
         (error: any, response: request.Response, body: any) => {
-          try {
-            if (!error && response.statusCode >= 200 && response.statusCode < 300 ) {
-              resolve(new Harness.RepositoryConfig(body.data));
+          log.debug("scotty config request finished");
+          if (!error && response.statusCode >= 200 && response.statusCode < 300 ) {
+            const repoConfig = new Harness.RepositoryConfig(body.data);
+            resolve(repoConfig);
+          } else {
+            if (error) {
+              reject(new Comms.Error("General Config Retrieval Error", error));
             } else {
-              if (error) {
-                reject(new Comms.Error("General Error", error));
-              } else {
-                reject((body as Comms.Message.ErrorMessage).errors);
-              }
+              reject((body as Comms.Message.ErrorMessage).errors);
             }
-          } catch (err) {
-            reject([ new Comms.Error("Configuration Error", err) ]);
           }
         }
       );
